@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "stage": "discovery",
+  "author_session": "",
+  "reviewer_session": "",
+  "reviewer_role": "critical_reviewer",
+  "verdict": "pending",
+  "evidence": [],
+  "findings": [],
+  "checks": [],
+  "source_digest": "",
+  "task_contract_digest": ""
+}

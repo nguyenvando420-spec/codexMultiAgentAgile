@@ -1,0 +1,2 @@
+# Toolkit development only; no runtime third-party dependencies.
+ruff==0.14.5
