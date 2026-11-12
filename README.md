@@ -5,6 +5,10 @@ khảo, quyết định công nghệ, thống nhất chuẩn code đến triển
 khả năng vận hành. Agent chính dùng subagent thật của phiên Codex để giao việc,
 thu kết quả và tích hợp. Đây không phải dịch vụ chạy nền tự gọi model.
 
+Team mặc định theo kiểu Antigravity có **14 vai trò**, gồm Scrum Master điều phối,
+12 chuyên môn phần mềm/AI và reviewer bổ sung. Gọi **`$agile-scrum-orchestrator`**
+trong phiên Codex mới. [Chi tiết bản thích nghi](docs/antigravity-agile.md).
+
 ## Clone và cài đặt
 
 Yêu cầu Python 3.11+ và một phiên Codex có công cụ subagent. `agy` là tùy chọn.
@@ -31,12 +35,19 @@ Gửi một yêu cầu có ý tưởng cụ thể, ví dụ:
 > tôi. Bắt đầu phân tích và nghiên cứu tham khảo, phản biện độc lập từng giai đoạn,
 > sau đó chốt công nghệ, chuẩn code và triển khai đến mức sẵn sàng production.
 
-Ở phiên mới trong thư mục toolkit/dự án đã khởi tạo, có thể gọi `$agile-delivery`.
+Ở phiên mới trong thư mục toolkit, gọi `$agile-scrum-orchestrator` kèm ý tưởng
+và thư mục dự án. Main Agent nạp persona `agile-scrum-master`, trực tiếp chia và
+giao việc cho các vai trò, theo dõi phụ thuộc và trình ba Gate của người dùng.
+Workflow gốc chín vai trò/sáu stage vẫn có thể chọn bằng `$agile-delivery`.
 Custom agents/skill có thể cần mở phiên mới để client nạp. Trong phiên hiện tại,
 điều phối viên có thể đọc TOML của vai trò rồi giao instructions cho native
 subagent; không coi việc có file cấu hình là bằng chứng client đã hot-reload.
 
-## Khởi tạo dự án mới bằng CLI
+## Khởi tạo dự án mới bằng CLI của workflow gốc
+
+Các lệnh CLI dưới đây quản lý workflow gốc chín vai trò/sáu stage. Skill
+`$agile-scrum-orchestrator` quản lý trạng thái ba Gate tại
+`docs/04-sprint-management/agile-state.md`; không dùng task `agile-*` với CLI gốc.
 
 ```sh
 cd codexMultiAgentAgile
@@ -58,7 +69,32 @@ bằng phiên Codex/subagent hiện tại.
 
 ## Vai trò và quyết định
 
-9 vai trò: Product Analyst, Research Engineer, Solution Architect, Tech Lead,
+Team kiểu Antigravity gồm các persona TOML trong `.codex/agents/`:
+
+| Agent | Trách nhiệm |
+|---|---|
+| `agile-scrum-master` | Main Agent điều phối, chia việc và theo dõi Sprint |
+| `agile-researcher` | Nghiên cứu hệ thống tham chiếu và production requirements |
+| `agile-po-ba` | Vision, personas, backlog và acceptance criteria |
+| `agile-tech-lead` | Tech stack/model, ADR, dependency policy và chuẩn code |
+| `agile-architect` | C4, DB, API/model contracts và AI pipeline |
+| `agile-developer` | Code phần mềm và unit tests |
+| `agile-qa` | Kiểm thử phần mềm độc lập |
+| `agile-devops` | CI/CD, container/serving, release và rollback |
+| `agile-ai-data-engineer` | Dataset, PII, split chống leakage và chỉ mục RAG offline |
+| `agile-slm-trainer` | Fine-tune, distillation, quantization và benchmark model |
+| `agile-ai-engineer` | Tích hợp AI, RAG online, tool calling và guardrails |
+| `agile-mlops-eval` | Đánh giá chất lượng/an toàn AI, latency/VRAM và serving |
+| `agile-critic` | Phản biện độc lập trước ba Gate |
+| `agile-codex` | Review bổ sung thiết kế, từng gói việc và production |
+
+Tech Lead đề xuất stack/model và chuẩn code; Architect thiết kế hợp đồng.
+Researcher làm trước PO/BA; Critic review trước mỗi Gate. Người dùng duyệt
+nghiên cứu/backlog, thiết kế/Sprint, rồi nghiệm thu/release. Các agent kế thừa
+model của phiên Codex; khác phiên reviewer không đồng nghĩa khác họ model.
+AI huấn luyện trên Colab/Kaggle và được kiểm định suy luận trên RTX 2060 6 GB.
+
+Workflow gốc giữ 9 vai trò: Product Analyst, Research Engineer, Solution Architect, Tech Lead,
 Developer, QA Engineer, Critical Reviewer, SRE Engineer và Security Reviewer.
 Bạn là Product Owner; agent chính điều phối. Tối đa 3 subagent hoạt động đồng
 thời, hoặc giới hạn thấp hơn của host; luân chuyển vai trò theo giai đoạn.
@@ -68,7 +104,7 @@ test và CI. Research phải cung cấp nguồn và đánh giá mức phù hợp
 Reviewer dùng phiên độc lập với tác giả. Chi tiết tại [vai trò](docs/roles.md)
 và [quy trình](docs/workflow.md).
 
-## Gate có bằng chứng
+## Gate có bằng chứng của workflow gốc
 
 ```sh
 ./agile-team evidence ../du-an-moi docs/product-brief.md docs/research.md
@@ -91,7 +127,7 @@ nhận production. Điều phối viên phải xem bằng chứng gốc, session
 ở môi trường đích. `complete` không tự có nghĩa đã deploy. Nếu thiếu môi trường
 đích, ghi rõ phần chuẩn bị đã xong và phần kiểm chứng còn bị chặn.
 
-## Worker agy
+## Worker agy của workflow gốc
 
 ```sh
 .venv/bin/python scripts/agy_worker.py doctor
